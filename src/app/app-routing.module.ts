@@ -11,6 +11,10 @@ const routes: Routes = [
     redirectTo: 'home',
     pathMatch: 'full'
   },
+  {
+    path: 'message-display/:userid',
+    loadChildren: () => import('./pages/message-display/message-display.module').then( m => m.MessageDisplayPageModule)
+  },
 ];
 
 @NgModule({

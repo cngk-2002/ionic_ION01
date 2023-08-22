@@ -1,0 +1,65 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Message Display</ion-title>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="home"></ion-back-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-grid style="margin-left: 10px;width: 95%;">
+    <ion-row>
+      <h1>メッセージ</h1>
+    </ion-row>
+    <ion-row>
+      <ion-col size="10" class="align-center-items">
+        <ion-input class="inputtext" fill="outline" [(ngModel)]="newItem.message"></ion-input>
+      </ion-col>
+      <ion-col size="2">
+        <ion-button class="postbutton" (click)="postmessage()">投稿</ion-button>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-list class="listitem" style="width: 100%;">
+        <ion-grid *ngFor="let item of getPaginatedData()"
+          style="margin-bottom: 20px;background-color: white;padding: 10px;">
+          <ion-row>
+            <ion-label>{{item.payload.doc.data().message}}</ion-label>
+          </ion-row>
+          <ion-row style="margin-top: 20px;">
+            <ion-col size="2">
+              <ion-button class="noborderbutton" [disabled]="item.payload.doc.data().userid != userID"
+                (click)="showEditMessAlert(item.payload.doc.data().message,item.payload.doc.id,item.payload.doc.data().userid)"><ion-icon
+                  name="pencil-outline"></ion-icon> 編集</ion-button>
+            </ion-col>
+            <ion-col size="2">
+              <ion-button class="noborderbutton" [disabled]="item.payload.doc.data().userid != userID"
+                (click)="confirmdelAlert(item.payload.doc.id)"><ion-icon name="close-outline"></ion-icon>
+                削除</ion-button>
+            </ion-col>
+            <ion-col class="align-center-items" size="2" offset="4">
+              <ion-label>by {{item.payload.doc.data().userid}}</ion-label>
+            </ion-col>
+            <ion-col class="align-center-items">
+              <ion-label>{{ calculatedate(item.payload.doc.data().timepost) }}</ion-label>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </ion-list>
+
+    </ion-row>
+    <ion-row>
+      <ion-col size="2">
+        <ion-button class="prebutton noborderbutton" [disabled]="currentPage === 1"
+          (click)="goToPage(currentPage - 1)"><ion-icon name="chevron-back-outline"></ion-icon> 前へ</ion-button>
+      </ion-col>
+      <ion-col offset="8">
+        <ion-button class="nextbutton noborderbutton" (click)="goToPage(currentPage + 1)"
+          [disabled]="currentPage === getTotalPages()">次へ <ion-icon
+            name="chevron-forward-outline"></ion-icon></ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+</ion-content>
