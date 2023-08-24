@@ -1,43 +1,36 @@
-ion-content{
-    --background:#F2F2F2;
+ion-col{
+
+  ion-input{
+      border: 1px solid #2F5597;
+      --padding-bottom: 10px;
+      --padding-end: 10px;
+      --padding-start: 10px;
+      --padding-top: 10px;
+      border-radius: 5px;
+    }
+    
+  ion-button{
+     height: 100%;
+     width: 100%;
+     margin: 0;
+     font-size:medium;
+  }
 }
 
+.card_container{
+  background-color: #F2F2F2;
+  width: 100%;
+  .card{
+      margin: 0 10px;
+  }
 
-.inputtext{
-  --border-color: #2F5597;
-  font-size: 15px !important; /* Set the desired font size */
-  min-height: 45px !important;
-  --padding: 0px !important;
-  --border-radius: 0;
-}
-
-
-.align-center-items{
+.colButton{
   display: flex;
-  flex-direction: column;
-  justify-content: space-around;
   align-items: center;
 }
-
-.postbutton{
-  --border-radius: 0; /* Set border radius to 0 */
-  --box-shadow: none;
-  width: 100%;
-  height: 45px;
-  font-size: 20px;
-  --background: #2F5597; 
+  
 }
 
-.noborderbutton{
-  --background:none;
-  --box-shadow: none;
-  color:black; 
-}
-
-.prebutton,.nextbutton{
-  font-size: 20px;
-}
-
-.listitem{
-  background-color: #F2F2F2;
+.button-inner{
+  justify-content: start;
 }

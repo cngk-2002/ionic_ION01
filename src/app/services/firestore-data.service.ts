@@ -2,47 +2,32 @@ import { Injectable } from '@angular/core';
 import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/compat/firestore';
 
 
-export class Chat {
-  userid?: string;
-  timepost?: Date;
-  message?: string;
+export class Mess{
+  user?:string;
+  mess?:string;
+  createdTime?:Date;
 }
-
 @Injectable({
   providedIn: 'root'
 })
-export class FirestoreDataService {
-
-  chatsRef!: AngularFirestoreCollection<Chat>;
-
-  constructor(db :AngularFirestore) { 
-    this.chatsRef = db.collection('/chat', ref=>ref.orderBy('timepost','desc'));
-    // console.log(this.chatsRef);
+export class FirebaseDataService {
+  messRef!: AngularFirestoreCollection<Mess>
+  constructor(db: AngularFirestore) { 
+    this.messRef = db.collection('/message-display', ref=>ref.orderBy('createdTime','desc'))
   }
+  getAllDocuments(){
+    return this.messRef.snapshotChanges()
+   }
+   create(mess: Mess){
+    mess.createdTime = new Date();
+    return this.messRef.add({...mess})
+   }
+   delete(id: string) : Promise<void>{
+    return this.messRef.doc(id).delete();
+   }
+   async update(id: string, mess: string){
 
-  getAllDocuments() {
-    return this.chatsRef.snapshotChanges();
-  }
-
-  create(chat: Chat) {
-    chat.timepost = new Date();
-    return this.chatsRef.add({ ...chat });
-  }
-
-  delete(id:string): Promise<void>{
-    return this.chatsRef.doc(id).delete();
-  }
-
-  update(id: string, message: string, userid: string): Promise<void> {
-    const now = new Date();
-    const updatedChat = {
-      message: message,
-      userid: userid,
-      timepost: now
-    };
-    return this.chatsRef.doc(id).update(updatedChat);
-  }
-
-
-
+    return await this.messRef.doc(id).update({mess: mess})
+   }
+   
 }

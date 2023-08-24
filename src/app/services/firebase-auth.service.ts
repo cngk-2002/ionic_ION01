@@ -1,46 +1,37 @@
 import { Injectable } from '@angular/core';
-import firebase from 'firebase/compat/app';
-import { Router } from '@angular/router';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
+import { Router } from '@angular/router';
+import { ToastController } from '@ionic/angular';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class FirebaseAuthService {
 
-  constructor(private afAuth: AngularFireAuth, private router: Router) { }
-  async signInWithGoogle() {
+  constructor(
+    private auth: AngularFireAuth,
+    private router: Router,
+    private toastController: ToastController
+  ) {}
+
+  async loginWithEmail(email : string, password : string) {
     try {
-      const provider = new firebase.auth.GoogleAuthProvider();
-      const result = await this.afAuth.signInWithPopup(provider);
-      if (result.user) {
-        const userEmail = result.user.email;
-        const userName = result.user.displayName;
-        // Navigate to user profile page with user email and name
-        this.router.navigate(['/profile'], { queryParams: { email: userEmail, name: userName } });
-      }
+      await this.auth.signInWithEmailAndPassword(email, password)
+      .then(userCredential => {
+        this.router.navigate(['/message-display'], { queryParams: { user: email.split('@')[0]} });
+      })
     } catch (error) {
-      console.error('Error signing in with Google:', error);
+      console.error('Sign-in error:', error);
+      this.presentToast('ログイン中にエラーが発生しました');
     }
   }
 
-  async signOutFromGoogle() {
-    try {
-      await this.afAuth.signOut();
-    } catch (error) {
-      console.error('Error signing out:', error);
-    }
+  async presentToast(message: string) {
+    const toast = await this.toastController.create({
+      message: message,
+      duration: 2000,
+      position: 'bottom',
+    });
+    toast.present();
   }
-
-  isLoggedIn = false
-
-  async signIn(email:string, password:string){
-
-    await this.afAuth.signInWithEmailAndPassword(email,password)
-    .then(res => {
-      this.isLoggedIn = true;
-    })
-
-  }
-
 }

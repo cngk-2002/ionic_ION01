@@ -12,7 +12,7 @@ const routes: Routes = [
     pathMatch: 'full'
   },
   {
-    path: 'message-display/:userid',
+    path: 'message-display',
     loadChildren: () => import('./pages/message-display/message-display.module').then( m => m.MessageDisplayPageModule)
   },
 ];

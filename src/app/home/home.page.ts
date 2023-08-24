@@ -1,49 +1,59 @@
 import { Component } from '@angular/core';
-import { Router } from '@angular/router';
-import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { FirebaseAuthService } from '../services/firebase-auth.service';
-
-
+import { AngularFireAuth } from '@angular/fire/compat/auth';
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
 })
 export class HomePage {
-  
-
-  constructor(private afAuth: AngularFireAuth, private router: Router,private firebaseService:FirebaseAuthService) {}
-  
-  useremail?:string;
-  userpassword?:string;
-  userid?:string;
-
-  async signIn() {
-    console.log(this.useremail+' '+this.userpassword);
-    if(this.useremail && this.userpassword){
-      // this.firebaseService.signIn(this.useremail,this.userpassword);
-      try{
-        await this.afAuth.signInWithEmailAndPassword(this.useremail,this.userpassword)
-        .then(res => {
-          // this.isLoggedIn = true;
-          console.error('Sign in'); 
-          this.router.navigate(['/message-display/', this.useremail]);
-        })
-      }catch (error) {
-        alert('無効なメールアドレスまたはパスワード'); 
-      }
+  isToastOpen = false;
+  mess = ''
+  email : string = ''
+  password : string = ''
+  constructor(private firebaseService: FirebaseAuthService, public auth: AngularFireAuth, private router: Router,) {}
+  handleLogin(){
+    if(this.email === '' && this.password === ''){
+      this.mess = 'メルアドレスとパスワードを入力してください'
+      this.setOpen(true)
+    } else if(this.email === ''){
+      this.mess = 'メルアドレスを入力してください'
+      this.setOpen(true)
+    }
+    else if(this.password === ''){
+      this.mess = 'パスワードを入力してください'
+      this.setOpen(true)
     }
     else {
-      if(this.useremail){
-        this.showAlert('パスワード');
+      this.auth.signInWithEmailAndPassword(this.email, this.password)
+      .then(userCredential => {
+        this.router.navigate(['/message-display'], { queryParams: { user: this.email.split('@')[0]} });
+      })
+      .catch(error => {
+        this.checkEmail()
+      });
+  
+    }
+  }
+  setOpen(isOpen: boolean) {
+    this.isToastOpen = isOpen;
+  }
+
+  async checkEmail() {
+    try {
+      const methods = await this.auth.fetchSignInMethodsForEmail(this.email);
+      if(methods.length > 0){
+        this.mess = 'パスワードが間違っています。'
+        this.setOpen(true)
+      } else{
+        this.mess = 'メルアドレスが存在しません。'
+        this.setOpen(true)
       }
-      else{
-        this.showAlert('ユーザID'); 
-      }
+    } catch (error) {
+      console.error('Mail error:', error);
     }
   }
 
-  showAlert(text:string): void {
-    alert(text+' を入力してください');
-  }
+
 }
